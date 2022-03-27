@@ -30,6 +30,9 @@ namespace Sigtrap.Editors.ShaderStripper {
 		bool _allowVrVariants;
 		[SerializeField][Tooltip("Allow GPU instanced versions of variants in collection even when instancing keywords not in collection.")]
 		bool _allowInstancedVariants;
+		[SerializeField]
+		[Tooltip("删减SVC没配置的Variants")]
+		bool _stripExcluded;
 
 		[SerializeField][Tooltip("Shaders matching these names will be ignored (not stripped)")]
 		StringMatch[] _ignoreShadersByName;
@@ -370,8 +373,11 @@ namespace Sigtrap.Editors.ShaderStripper {
         protected override bool StripCustom(Shader shader, ShaderSnippetData passData, IList<ShaderCompilerData> variantData){
 			// Don't strip anything if no collections present
 			if (!_valid) return true;
-            // Always ignore built-in shaders
-            if (string.IsNullOrEmpty(AssetDatabase.GetAssetPath(shader))) return true;
+			// Always ignore built-in shaders
+			if (string.IsNullOrEmpty(AssetDatabase.GetAssetPath(shader))) {
+				LogMessage(this, string.Format ("Built-in shader strip: {0}", shader.name));
+				return true;
+			}
 			// Ignore shaders by name
 			foreach (var s in _ignoreShadersByName){
 				if (s.Evaluate(shader.name)) return true;
@@ -452,7 +458,7 @@ namespace Sigtrap.Editors.ShaderStripper {
             } else {
                 // If not matched shader, clear all
                 // Check if shader is hidden
-                if (_stripHidden || !shader.name.StartsWith("Hidden/")){
+                if (_stripExcluded && (_stripHidden || !shader.name.StartsWith("Hidden/"))){
                     LogRemoval(this, shader, passData);
                     variantData.Clear();
                 }

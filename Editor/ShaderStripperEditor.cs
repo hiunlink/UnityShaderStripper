@@ -23,6 +23,13 @@ namespace Sigtrap.Editors.ShaderStripper {
 			_i.Show();
 		}
 		static ShaderStripperEditor _i;
+		public static ShaderStripperEditor Instance
+        {
+			get
+            {
+				return _i;
+            }
+        }
 
 		static bool _enabled;
 		static bool _deepLogs;
@@ -231,7 +238,8 @@ namespace Sigtrap.Editors.ShaderStripper {
 		} 
 		static readonly BuiltinShaderDefine[] _platformKeywords = (BuiltinShaderDefine[])System.Enum.GetValues(typeof(BuiltinShaderDefine));
 		public void OnProcessShader(Shader shader, ShaderSnippetData snippet, IList<ShaderCompilerData> data){
-			if (!_enabled) return;
+			if (!_enabled) 
+				return;
 			_rawCount += data.Count;
 
 			var builtins = (BuiltinShaderDefine[])System.Enum.GetValues(typeof(BuiltinShaderDefine));
