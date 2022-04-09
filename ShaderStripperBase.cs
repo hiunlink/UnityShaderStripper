@@ -146,6 +146,35 @@ namespace Sigtrap.Editors.ShaderStripper {
 			}
 			_log.Add(log);
 		}
+		static protected void LogKept(ShaderStripperBase stripper, Shader shader, ShaderSnippetData pass, int variantIndex, int variantCount, ShaderCompilerData variant)
+		{
+			if (!stripper._logOutput) return;
+			string log = null;
+			if (_deepLogs) {
+				log = string.Format(
+					"Kept shader [{0}] pass type [{1}] variant [{2}/{3}] [{4}]\n\tShaderStripper: {5}\n\tKeywords:",
+					shader.name, pass.passType, variantIndex, variantCount - 1, variant.graphicsTier, stripper.name
+				);
+				var ks = variant.shaderKeywordSet.GetShaderKeywords();
+
+				if (ks != null && ks.Length > 0) {
+					bool first = true;
+					foreach (var k in variant.shaderKeywordSet.GetShaderKeywords()) {
+						if (!first) log += ",";
+						log += " " + GetKeywordName(k);
+						first = false;
+					}
+				} else {
+					log += " <no keywords>";
+				}
+			} else {
+				log = string.Format(
+					"Kept shader [{0}] pass type [{1}] variant [{2}/{3}]\n\tShaderStripper: {4}",
+					shader.name, pass.passType, variantIndex, variantCount - 1, stripper.name
+				);
+			}
+			_log.Add(log);
+		}
 		static protected void LogMessage(ShaderStripperBase stripper, string message, MessageType type=MessageType.None){
 			if (!stripper._logOutput) return;
 			string log = string.Format("ShaderStripper {0}: {1}", stripper.name, message);

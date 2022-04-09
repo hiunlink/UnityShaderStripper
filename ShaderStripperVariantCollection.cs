@@ -406,6 +406,7 @@ namespace Sigtrap.Editors.ShaderStripper {
 							if (_tempExcludes.Count > 0){
 								if (_tempExcludes.Contains(n)){
 									add = false;
+									LogMessage(this, string.Format("\nREMOVE SHAHDER KEYWORD: {0} kwyword {1}", passData.passType, n), MessageType.Info);
 								}
 							}
 							if (add){
@@ -448,8 +449,10 @@ namespace Sigtrap.Editors.ShaderStripper {
                         if (!variantMatched){
                             LogRemoval(this, shader, passData, i, count, variantData[i]);
                             variantData.RemoveAt(i);
-                        }
-                    }
+                        } else {
+							LogKept(this, shader, passData, i, count, variantData[i]);
+						}
+					}
                 } else {
                     // If not matched pass, clear all variants
                     LogRemoval(this, shader, passData);
@@ -461,8 +464,14 @@ namespace Sigtrap.Editors.ShaderStripper {
                 if (_stripExcluded && (_stripHidden || !shader.name.StartsWith("Hidden/"))){
                     LogRemoval(this, shader, passData);
                     variantData.Clear();
-                }
-            }
+                } else {
+					int count = variantData.Count;
+					for (int i = count - 1; i >= 0; --i) {
+						LogKept(this, shader, passData, i, count, variantData[i]);
+					}
+				}
+
+			}
 
             return true;
         }
